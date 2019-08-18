@@ -6,7 +6,7 @@ import numpy as np
 def convolution2d(image, kernel, pad):
     m, n = kernel.shape
     image = cv2.copyMakeBorder(image, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=0)
-    print(image)
+    
     y, x = image.shape
     y_out = y - m + 1
     x_out = x - n + 1
@@ -23,7 +23,6 @@ def main():
     kernel = np.array([[1, 2, 1], [1, -2, 1], [-1, 2, -1]])
     new_image = convolution2d(image, kernel, 2)
     plt.imshow(new_image)
-    print(new_image)
 
 if __name__ == '__main__':
     main()
