@@ -21,6 +21,7 @@ def main():
     image = mpimg.imread('../test_images/lena.png')
     kernel = np.array([[1, 2, 1], [1, -2, 1], [-1, 2, -1]])
     new_image = convolution2d(image, kernel, 2)
+    
     figure, (axis1, axis2) = plt.subplots(1, 2)
     axis1.imshow(image, cmap = "gray")
     axis2.imshow(new_image, cmap = "gray")
