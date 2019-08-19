@@ -1,11 +1,10 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import cv2
 import numpy as np
 
 def convolution2d(image, kernel, pad):
     m, n = kernel.shape
-    image = cv2.copyMakeBorder(image, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=0)
+    image = pad_image(image, pad)
     y, x = image.shape
     y_out = y - m + 1
     x_out = x - n + 1
@@ -16,6 +15,17 @@ def convolution2d(image, kernel, pad):
             new_image[i][j] = np.sum(image[i:i+m, j:j+n]*kernel)
 
     return new_image
+
+def pad_image(image, pad):
+    m, n = image.shape
+    axes_change = pad * 2
+    padded_image = np.zeros((m+axes_change, n+axes_change))
+
+    for i in range(0, image.shape[0]):
+        for j in range(0, image.shape[1]):
+            padded_image[i+pad,j+pad] = image[i,j]
+    
+    return padded_image
 
 def main():
     image = mpimg.imread('../test_images/lena.png')
