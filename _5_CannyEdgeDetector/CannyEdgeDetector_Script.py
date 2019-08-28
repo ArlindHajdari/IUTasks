@@ -8,6 +8,7 @@ import matplotlib.image as mpimg
 import numpy as np
 
 class cannyEdgeDetector:
+    # Constructor
     def __init__(self, img, sigma=1, kernel_size=5, weak_pixel=75, strong_pixel=255, lowthreshold=0.05, highthreshold=0.15):
         self.img = img
         self.img_smoothed = None
@@ -24,31 +25,31 @@ class cannyEdgeDetector:
         return 
     
     def gaussian_kernel(self, size, sigma=1):
-        size = int(size) // 2
+        size = int(size) // 2 
         x, y = np.mgrid[-size:size+1, -size:size+1]
         normal = 1 / (2.0 * np.pi * sigma**2)
-        g =  np.exp(-((x**2 + y**2) / (2.0*sigma**2))) * normal
+        g =  np.exp(-((x**2 + y**2) / (2.0*sigma**2))) * normal # The equation for a Gaussian filter
         return g
     
     def sobel_filters(self, img):
+        # Double filters to work on both axes
         Kx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], np.float32)
         Ky = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], np.float32)
 
-        Ix = convolution2d(img, Kx, 2)
-        Iy = convolution2d(img, Ky, 2)
+        Ix = convolution2d(img, Kx, 2) # Apply convolution in X axis
+        Iy = convolution2d(img, Ky, 2) # Apply convolution in Y axis
 
-        G = np.hypot(Ix, Iy)
-        G = G / G.max() * 255
-        theta = np.arctan2(Iy, Ix)
+        G = np.hypot(Ix, Iy) # Equivalent to sqrt(Ix**2 + Iy**2)
+        G = G / G.max() * 255 # G calculation
+        theta = np.arctan2(Iy, Ix) # Theta calculation
         return (G, theta)
     
 
     def non_max_suppression(self, img, D):
         M, N = img.shape
         Z = np.zeros((M,N), dtype=np.int32)
-        angle = D * 180. / np.pi
-        angle[angle < 0] += 180
-
+        angle = D * 180. / np.pi # Radian to degrees
+        angle[angle < 0] += 180 # angels under 0 increase by 180
 
         for i in range(1,M-1):
             for j in range(1,N-1):
@@ -85,8 +86,8 @@ class cannyEdgeDetector:
         return Z
 
     def threshold(self, img):
-        highThreshold = img.max() * self.highThreshold
-        lowThreshold = highThreshold * self.lowThreshold
+        highThreshold = img.max() * self.highThreshold # Get the highest threshold
+        lowThreshold = highThreshold * self.lowThreshold # Get the lowest threshold
 
         M, N = img.shape
         res = np.zeros((M,N), dtype=np.int32)
@@ -94,13 +95,13 @@ class cannyEdgeDetector:
         weak = np.int32(self.weak_pixel)
         strong = np.int32(self.strong_pixel)
 
-        strong_i, strong_j = np.where(img >= highThreshold)
-        zeros_i, zeros_j = np.where(img < lowThreshold)
+        strong_i, strong_j = np.where(img >= highThreshold) # Fetch strongest pixels
+        zeros_i, zeros_j = np.where(img < lowThreshold) # Fetch lowest pixels
 
-        weak_i, weak_j = np.where((img <= highThreshold) & (img >= lowThreshold))
+        weak_i, weak_j = np.where((img <= highThreshold) & (img >= lowThreshold)) # Pixels between low and high threshold
 
-        res[strong_i, strong_j] = strong
-        res[weak_i, weak_j] = weak
+        res[strong_i, strong_j] = strong # Override the strong pixels
+        res[weak_i, weak_j] = weak # Override the weak pixels
 
         return (res)
 
@@ -108,7 +109,8 @@ class cannyEdgeDetector:
         M, N = img.shape
         weak = self.weak_pixel
         strong = self.strong_pixel
-
+        
+        # Transforming weak pixels into strong ones, if and only if at least one of the pixels around the one being processed is a strong one
         for i in range(1, M-1):
             for j in range(1, N-1):
                 if (img[i,j] == weak):
@@ -135,16 +137,16 @@ class cannyEdgeDetector:
 
 
 def main():
-    img =  mpimg.imread("../test_images/lena.png")
+    img =  mpimg.imread("../test_images/lena.png") # Read the image
 
-    detector = cannyEdgeDetector(img, sigma=1.4, kernel_size=5, lowthreshold=0.09, highthreshold=0.17, weak_pixel=100)
-    final_img = detector.detect()
+    detector = cannyEdgeDetector(img, sigma=1.4, kernel_size=5, lowthreshold=0.09, highthreshold=0.17, weak_pixel=100) # Initialize with custom parameters
+    final_img = detector.detect() # Apply the functions
 
-    plt.ion()
+    # Show original and transformed image
     fig, (ax1, ax2) = plt.subplots(1, 2)
     fig.suptitle('Canny edge detector')
     ax1.imshow(img, cmap='gray')
-    ax2.imshow(final_img)
+    ax2.imshow(final_img, cmap='gray')
     plt.show(block=True)
 
 
