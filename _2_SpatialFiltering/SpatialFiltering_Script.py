@@ -33,7 +33,7 @@ def pad_image(image, pad):
 def main():
     image = mpimg.imread('../test_images/lena.png') # Read the image from the path
     kernel = np.array([[1, 2, 1], [1, -2, 1], [-1, 2, -1]]) 
-    new_image = convolution2d(image, kernel, 2)
+    new_image = convolution2d(image, kernel, 2) # Compute the convolution of the image by kernel with padding = 2 (kernel size - 1)
     
     # Show the image
     figure, (axis1, axis2) = plt.subplots(1, 2)
