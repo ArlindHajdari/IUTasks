@@ -8,13 +8,10 @@ def convolution2d(image, kernel, pad):
 
     image = pad_image(image, pad) # Pad the image for the given pad
     
-    x_out = x - n + 1 # Create the new value for the x axis
-    y_out = y - m + 1 # Create the new value for the y axis
-   
-    new_image = np.zeros((x_out, y_out)) # Create filled with zeros matrix of size x_out x y_out
+    new_image = np.zeros((x, y)) # Create filled with zeros matrix of size x_out x y_out
 
-    for i in range(x_out):
-        for j in range(y_out):
+    for i in range(x):
+        for j in range(y):
             new_image[i][j] = np.sum(image[i:i+m, j:j+n] * kernel) # Compute the sum of the multiplied matrixes (pattern of the image of size of the kernel, and kernel itself)
 
     return new_image
@@ -34,7 +31,7 @@ def main():
     image = mpimg.imread('../test_images/lena.png') # Read the image from the path
     kernel = np.array([[1, 2, 1], [1, -2, 1], [-1, 2, -1]]) 
     new_image = convolution2d(image, kernel, 2) # Compute the convolution of the image by kernel with padding = 2 (kernel size - 1)
-    
+    print(new_image)
     # Show the image
     figure, (axis1, axis2) = plt.subplots(1, 2)
     axis1.imshow(image, cmap = "gray")
