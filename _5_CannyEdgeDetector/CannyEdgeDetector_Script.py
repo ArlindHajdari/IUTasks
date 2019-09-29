@@ -128,13 +128,21 @@ class cannyEdgeDetector:
     
     def detect(self):  
         self.img_smoothed = convolution2d(self.img, self.gaussian_kernel(self.kernel_size, self.sigma), 3)
+        printImage(self.img_smoothed, "Smoothed image")
         self.gradientMat, self.thetaMat = self.sobel_filters(self.img_smoothed)
+        printImage(self.gradientMat, "Sobel filter applied")
         self.nonMaxImg = self.non_max_suppression(self.gradientMat, self.thetaMat)
+        printImage(self.nonMaxImg, "Non max suppression")
         self.thresholdImg = self.threshold(self.nonMaxImg)
+        printImage(self.thresholdImg, "Thresholded image")
         self.img = self.hysteresis(self.thresholdImg)
-
         return self.img
 
+def printImage(img, description):
+    fig, ax1 = plt.subplots(1, 1)
+    fig.suptitle(description)
+    ax1.imshow(img, cmap='gray')
+    plt.show(block=True)
 
 def main():
     img =  mpimg.imread("../test_images/lena.png") # Read the image
